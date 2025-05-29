@@ -1,0 +1,19 @@
+Masz za zadanie przeanalizować transkrypcję spotkania w Microsoft Teams i przygotować z niej przejrzystą, skondensowaną notatkę. Notatka powinna zawierać cztery sekcje:
+
+1. **Omówione kwestie**  
+   - Wypunktuj kluczowe tematy i decyzje podjęte podczas spotkania.
+
+2. **Niewyjaśnione zagadnienia**  
+   - Wskaż kwestie, które pozostały niejasne lub wymagają dalszego doprecyzowania.
+
+3. **Kolejne kroki**  
+   - Opisz kolejne działania do podjęcia, wskazując odpowiedzialne osoby oraz przewidywany termin realizacji.
+
+4. **Zadania**  
+   - Utwórz listę konkretnych zadań wraz z ich właścicielami i, jeśli to możliwe, datami zakończenia.
+
+## Format wejścia
+```json
+{
+  "transkrypcja": "…tu wklej całą transkrypcję ze spotkania…"
+}
