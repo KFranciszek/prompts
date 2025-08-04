@@ -1,0 +1,258 @@
+# Zaawansowany Prompt do Konwersji PDF z JIRA Confluence na Markdown
+
+## Instrukcja główna
+
+Przekonwertuj załączony dokument PDF (eksport z JIRA Confluence) na czysty, dobrze sformatowany dokument Markdown, zachowując całą strukturę, treść i formatowanie w możliwie najdokładniejszy sposób.
+
+## Szczegółowe wytyczne konwersji
+
+### 1. Struktura dokumentu
+
+- **Nagłówki**: Zachowaj hierarchię nagłówków używając odpowiedniej liczby `#`:
+  - Tytuł strony → `# Tytuł`
+  - Sekcje główne → `## Sekcja`
+  - Podsekcje → `### Podsekcja`
+  - Itd. (do poziomu `######`)
+
+- **Spis treści**: Jeśli dokument zawiera spis treści, odtwórz go jako listę z linkami:
+  ```markdown
+  ## Spis treści
+  - [1. Wprowadzenie](#wprowadzenie)
+  - [2. Architektura](#architektura)
+    - [2.1 Komponenty](#komponenty)
+  ```
+
+### 2. Formatowanie tekstu
+
+- **Pogrubienie**: `**tekst**` lub `__tekst__`
+- **Kursywa**: `*tekst*` lub `_tekst_`
+- **Przekreślenie**: `~~tekst~~`
+- **Kod inline**: `` `kod` ``
+- **Cytaty**: Użyj `>` dla bloków cytatów
+- **Separatory**: Użyj `---` lub `***` dla linii poziomych
+
+### 3. Listy
+
+- **Lista numerowana**:
+  ```markdown
+  1. Pierwszy element
+  2. Drugi element
+     1. Podelement
+     2. Kolejny podelement
+  ```
+
+- **Lista wypunktowana**:
+  ```markdown
+  - Element
+  - Kolejny element
+    - Podelement
+    - Kolejny podelement
+  ```
+
+- **Lista zadań** (jeśli występuje):
+  ```markdown
+  - [x] Zadanie wykonane
+  - [ ] Zadanie do wykonania
+  ```
+
+### 4. Tabele
+
+Konwertuj tabele Confluence na format Markdown:
+```markdown
+| Kolumna 1 | Kolumna 2 | Kolumna 3 |
+|-----------|-----------|-----------|
+| Dane 1    | Dane 2    | Dane 3    |
+| Dane 4    | Dane 5    | Dane 6    |
+```
+
+- Zachowaj wyrównanie kolumn jeśli jest istotne
+- Dla złożonych tabel z mergowanymi komórkami, użyj HTML:
+  ```html
+  <table>
+    <tr>
+      <td colspan="2">Scalona komórka</td>
+    </tr>
+  </table>
+  ```
+
+### 5. Bloki kodu
+
+- **Oznacz język programowania** dla podświetlania składni:
+  ```markdown
+  ```java
+  public class Example {
+      public static void main(String[] args) {
+          System.out.println("Hello World");
+      }
+  }
+  ```
+  ```
+
+- **Zachowaj wcięcia i formatowanie** dokładnie jak w oryginale
+
+### 6. Makra Confluence
+
+Przekształć makra Confluence na odpowiednie elementy Markdown:
+
+- **Panel/Note/Info/Warning/Error**:
+  ```markdown
+  > **ℹ️ Informacja**
+  > 
+  > Treść panelu informacyjnego
+
+  > **⚠️ Ostrzeżenie**
+  > 
+  > Treść ostrzeżenia
+
+  > **❌ Błąd**
+  > 
+  > Opis błędu
+  ```
+
+- **Expand/Collapse** (rozwijane sekcje):
+  ```markdown
+  <details>
+  <summary>Kliknij aby rozwinąć</summary>
+
+  Ukryta treść...
+
+  </details>
+  ```
+
+### 7. Multimedia i załączniki
+
+- **Obrazy**:
+  ```markdown
+  ![Opis obrazu](nazwa-pliku.png)
+  ```
+  Dodaj notatkę jeśli obraz nie jest dostępny:
+  ```markdown
+  ![Diagram architektury](diagram.png)
+  *[Obraz niedostępny w PDF - oryginalnie: diagram-architektury.png]*
+  ```
+
+- **Diagramy** (np. z draw.io, PlantUML):
+  - Jeśli diagram jest jako obraz, traktuj jak obraz
+  - Jeśli widoczny jest kod źródłowy diagramu, zachowaj go:
+    ```markdown
+    ```plantuml
+    @startuml
+    Alice -> Bob: Hello
+    @enduml
+    ```
+    ```
+
+### 8. Linki i odnośniki
+
+- **Linki zewnętrzne**: `[tekst linku](https://example.com)`
+- **Linki wewnętrzne** (do innych stron Confluence):
+  ```markdown
+  [Zobacz dokumentację API](link-do-confluence)
+  *[Link wewnętrzny Confluence]*
+  ```
+- **Kotwice/zakładki**: `[Przejdź do sekcji](#nazwa-sekcji)`
+
+### 9. Metadane i informacje o stronie
+
+Zachowaj metadane na początku dokumentu:
+```markdown
+---
+title: "Tytuł dokumentu"
+space: "Nazwa przestrzeni"
+parent: "Strona nadrzędna"
+created: "2024-01-15"
+modified: "2024-03-20"
+version: "1.2"
+labels: ["label1", "label2", "label3"]
+---
+```
+
+### 10. Elementy specjalne
+
+- **Status/Badge**:
+  ```markdown
+  ![Status](https://img.shields.io/badge/Status-Aktywny-green)
+  ```
+
+- **Użytkownicy/Mentions**: `@użytkownik` lub `**@Jan Kowalski**`
+
+- **Emotikony**: Zachowaj jako emoji Unicode lub opisz: `:smile:` → 😊
+
+- **Makra JIRA** (zadania, filtry):
+  ```markdown
+  **JIRA Issues:**
+  - [PROJ-123](https://jira.example.com/browse/PROJ-123) - Opis zadania
+  - [PROJ-124](https://jira.example.com/browse/PROJ-124) - Inny opis
+  ```
+
+### 11. Komentarze i adnotacje
+
+Jeśli PDF zawiera komentarze lub adnotacje:
+```markdown
+<!-- KOMENTARZ: Treść komentarza od @autor -->
+```
+
+### 12. Formatowanie specyficzne
+
+- **Dwukolumnowy układ**: Opisz w komentarzu i przedstaw treść sekwencyjnie
+- **Ramki i obramowania**: Użyj cytatów lub tabel HTML
+- **Kolory tekstu**: Zachowaj informację w komentarzu:
+  ```markdown
+  <!-- Oryginalnie tekst w kolorze czerwonym -->
+  **Ważna informacja**
+  ```
+
+## Instrukcje końcowe
+
+1. **Zachowaj kolejność** elementów dokładnie jak w PDF
+2. **Nie pomijaj** żadnej treści, nawet jeśli wydaje się mało istotna
+3. **Dodaj komentarze** gdy konwersja 1:1 nie jest możliwa
+4. **Waliduj** linki wewnętrzne i zewnętrzne
+5. **Zachowaj numerację** stron jeśli jest istotna: `<!-- Strona 5 -->`
+6. Jeśli nie jesteś pewien jak przekonwertować element, **opisz go** w komentarzu i zachowaj treść
+
+## Przykład wyniku
+
+```markdown
+# Dokumentacja Systemu XYZ
+
+---
+title: "Dokumentacja Systemu XYZ"
+space: "TECH"
+created: "2024-01-15"
+version: "2.1"
+---
+
+## Spis treści
+- [1. Wprowadzenie](#wprowadzenie)
+- [2. Architektura](#architektura)
+
+## 1. Wprowadzenie
+
+System XYZ jest **nowoczesną platformą** służącą do...
+
+> **ℹ️ Informacja**
+> 
+> Ten dokument jest przeznaczony dla deweloperów
+
+## 2. Architektura
+
+### 2.1 Komponenty główne
+
+| Komponent | Technologia | Wersja |
+|-----------|------------|--------|
+| Backend   | Java       | 17     |
+| Frontend  | React      | 18.2   |
+
+```java
+@RestController
+public class MainController {
+    // kod...
+}
+```
+
+![Diagram architektury](architecture-diagram.png)
+*[Obraz niedostępny w PDF]*
+```
+
+Przetwórz cały dokument zachowując powyższe wytyczne.
