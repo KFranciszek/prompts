@@ -1,0 +1,110 @@
+# Prompt do audytu bezpieczeństwa kodu
+
+## Instrukcja główna
+Przeprowadź szczegółowy audyt bezpieczeństwa dostarczonego kodu, koncentrując się na wykryciu wrażliwych danych, które mogą być widoczne w przeglądarce lub dostępne przez narzędzia deweloperskie (F12).
+
+## Zakres analizy
+
+### 1. Wrażliwe dane w kodzie frontendowym
+Sprawdź czy kod NIE zawiera:
+- Kluczy API (API keys, secret keys, private keys)
+- Tokenów autentykacji hardkodowanych w kodzie
+- Haseł lub credentiali w jakiejkolwiek formie
+- Adresów URL do wrażliwych endpointów bez odpowiedniej walidacji
+- Danych osobowych użytkowników (PII - Personally Identifiable Information)
+- Kluczy szyfrowania lub soli (salt) do hashowania
+- Identyfikatorów sesji lub tokenów JWT w niewłaściwych miejscach
+- Wrażliwych konfiguracji środowiskowych
+
+### 2. Problemy z localStorage/sessionStorage
+Zidentyfikuj czy:
+- Wrażliwe dane są przechowywane w localStorage lub sessionStorage
+- Tokeny autentykacji są zapisywane bez szyfrowania
+- Dane osobowe są cachowane w sposób niezabezpieczony
+- Brak jest odpowiedniego czyszczenia storage po wylogowaniu
+
+### 3. Luki w komunikacji z API
+Sprawdź:
+- Czy wrażliwe dane są wysyłane przez GET (widoczne w URL)
+- Czy brak jest szyfrowania wrażliwych danych przed wysłaniem
+- Czy odpowiedzi API zawierają nadmiarowe dane (overfetching)
+- Czy błędy API nie ujawniają wrażliwych informacji
+
+### 4. Problemy z komentarzami i debugowaniem
+Wyszukaj:
+- Zakomentowany kod produkcyjny z wrażliwymi danymi
+- Console.log() z danymi wrażliwymi
+- Komentarze TODO/FIXME ujawniające luki bezpieczeństwa
+- Debug mode pozostawiony w produkcji
+- Source maps udostępniające pełny kod źródłowy
+
+### 5. Bezpieczeństwo w Network Tab
+Oceń czy:
+- Nagłówki HTTP nie zawierają wrażliwych informacji
+- Payloady requestów są odpowiednio zabezpieczone
+- Odpowiedzi nie zawierają nadmiarowych danych użytkowników
+- Websockets nie przesyłają niezaszyfrowanych danych
+
+### 6. Walidacja i sanityzacja
+Zweryfikuj:
+- Brak walidacji inputów użytkownika (XSS)
+- Niebezpieczne używanie innerHTML lub dangerouslySetInnerHTML
+- Brak escapowania danych przed wyświetleniem
+- Podatność na injection attacks
+
+## Format odpowiedzi
+
+### 🔴 KRYTYCZNE ZAGROŻENIA
+[Lista problemów wymagających natychmiastowej naprawy]
+- **Problem**: [opis]
+- **Lokalizacja**: [plik:linia]
+- **Wpływ**: [co może się stać]
+- **Rozwiązanie**: [jak naprawić]
+
+### 🟡 ŚREDNIE ZAGROŻENIA
+[Lista problemów do naprawy w najbliższym czasie]
+- **Problem**: [opis]
+- **Lokalizacja**: [plik:linia]
+- **Wpływ**: [potencjalne konsekwencje]
+- **Rozwiązanie**: [rekomendowana naprawa]
+
+### 🟢 DROBNE PROBLEMY
+[Lista mniejszych problemów i dobrych praktyk]
+- **Problem**: [opis]
+- **Sugestia**: [jak ulepszyć]
+
+### 📋 CHECKLIST BEZPIECZEŃSTWA
+- [ ] Brak kluczy API w kodzie frontendowym
+- [ ] Brak haseł i credentiali
+- [ ] Właściwe użycie localStorage/sessionStorage
+- [ ] Bezpieczna komunikacja z API
+- [ ] Brak wrażliwych danych w komentarzach
+- [ ] Poprawna walidacja inputów
+- [ ] Brak danych w console.log()
+- [ ] Zabezpieczenie przed XSS
+- [ ] Brak wrażliwych danych w URL
+- [ ] Właściwe zarządzanie tokenami
+
+### 💡 REKOMENDACJE
+1. **Zmienne środowiskowe**: [sugestie użycia .env]
+2. **Szyfrowanie**: [gdzie zastosować]
+3. **Walidacja**: [dodatkowe zabezpieczenia]
+4. **Best practices**: [ogólne zalecenia]
+
+## Przykładowe pytania do developera
+1. Czy wszystkie klucze API są przechowywane po stronie serwera?
+2. Czy tokeny są odświeżane regularnie?
+3. Czy jest implementowany Content Security Policy?
+4. Czy przeprowadzono testy penetracyjne?
+5. Czy logi nie zawierają wrażliwych danych?
+
+---
+
+**UWAGA**: Skup się szczególnie na danych, które mogą być wyciągnięte przez użytkownika poprzez:
+- Inspekcję źródła strony (View Page Source)
+- Narzędzia deweloperskie (F12)
+- Network Tab w przeglądarce
+- Console JavaScript
+- Application/Storage w DevTools
+- Analiza Source Maps
+- Przechwytywanie ruchu sieciowego
