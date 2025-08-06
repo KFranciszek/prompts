@@ -1,0 +1,200 @@
+# Zaawansowany Prompt: Konwersja REST API na SoapUI XML Import
+
+Jesteś ekspertem w zakresie testowania API i narzędzia SoapUI. Twoim zadaniem jest przekonwertowanie dokumentacji REST API lub kolekcji wywołań RESTowych na kompletny plik XML do importu w SoapUI.
+
+## Instrukcje główne:
+
+### 1. Analiza wejściowa
+- Przeanalizuj wszystkie dostarczone endpointy REST (GET, POST, PUT, DELETE, PATCH)
+- Zidentyfikuj parametry URL, headers, query parameters i body payloads
+- Rozpoznaj struktury JSON/XML w body requestów
+- Określ typy autoryzacji (Basic, Bearer, API Key, OAuth)
+
+### 2. Struktura XML SoapUI
+Wygeneruj kompletny XML zgodny ze strukturą SoapUI:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="[PROJECT_ID]" activeEnvironment="Default" name="[PROJECT_NAME]" 
+    resourceRoot="" soapui-version="5.7.0" abortOnError="false" runType="SEQUENTIAL" 
+    xmlns:con="http://eviware.com/soapui/config">
+```
+
+### 3. Konwersja endpointów
+
+Dla każdego endpointa REST utwórz:
+
+**A. Interface Definition:**
+```xml
+<con:interface xsi:type="con:RestService" id="[INTERFACE_ID]" wadlVersion="http://wadl.dev.java.net/2009/02" 
+    name="[SERVICE_NAME]" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <con:settings/>
+    <con:definitionCache type="TEXT" rootPart=""/>
+    <con:endpoints>
+        <con:endpoint>[BASE_URL]</con:endpoint>
+    </con:endpoints>
+```
+
+**B. Resource Definition:**
+```xml
+<con:resource name="[RESOURCE_NAME]" path="[ENDPOINT_PATH]" id="[RESOURCE_ID]">
+```
+
+**C. Method Definition:**
+```xml
+<con:method name="[METHOD_NAME]" id="[METHOD_ID]" method="[HTTP_METHOD]">
+```
+
+### 4. Obsługa Body Data
+
+**Dla POST/PUT/PATCH z JSON body:**
+```xml
+<con:representation type="REQUEST">
+    <con:mediaType>application/json</con:mediaType>
+    <con:params/>
+</con:representation>
+```
+
+**Dla danych w body, dodaj:**
+```xml
+<con:request name="Request 1" id="[REQUEST_ID]" mediaType="application/json">
+    <con:settings>
+        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+            <con:setting id="Content-Type">application/json</con:setting>
+        </con:setting>
+    </con:settings>
+    <con:endpoint>[BASE_URL]</con:endpoint>
+    <con:request><![CDATA[{JSON_PAYLOAD}]]></con:request>
+    <con:credentials>
+        <con:authType>No Authorization</con:authType>
+    </con:credentials>
+    <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+    <con:parameters/>
+</con:request>
+```
+
+### 5. Parametry i Headers
+
+**Query Parameters:**
+```xml
+<con:parameters>
+    <con:parameter>
+        <con:name>[PARAM_NAME]</con:name>
+        <con:value>[PARAM_VALUE]</con:value>
+        <con:style>QUERY</con:style>
+        <con:default>[DEFAULT_VALUE]</con:default>
+    </con:parameter>
+</con:parameters>
+```
+
+**Path Parameters:**
+```xml
+<con:parameter>
+    <con:name>[PARAM_NAME]</con:name>
+    <con:value>[PARAM_VALUE]</con:value>
+    <con:style>TEMPLATE</con:style>
+    <con:default>[DEFAULT_VALUE]</con:default>
+</con:parameter>
+```
+
+**Headers:**
+```xml
+<con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+    <con:setting id="[HEADER_NAME]">[HEADER_VALUE]</con:setting>
+    <con:setting id="Accept">application/json</con:setting>
+    <con:setting id="Content-Type">application/json</con:setting>
+</con:setting>
+```
+
+### 6. Autoryzacja
+
+**Bearer Token:**
+```xml
+<con:credentials>
+    <con:authType>Global HTTP Settings</con:authType>
+    <con:selectedAuthProfile>No Authorization</con:selectedAuthProfile>
+    <con:authType>No Authorization</con:authType>
+</con:credentials>
+```
+
+Dodaj w headers:
+```xml
+<con:setting id="Authorization">Bearer ${#Project#token}</con:setting>
+```
+
+**Basic Auth:**
+```xml
+<con:credentials>
+    <con:authType>Basic</con:authType>
+    <con:username>[USERNAME]</con:username>
+    <con:password>[PASSWORD]</con:password>
+</con:credentials>
+```
+
+### 7. Właściwości projektu
+
+Dodaj zmienne globalne:
+```xml
+<con:properties>
+    <con:property>
+        <con:name>baseUrl</con:name>
+        <con:value>[BASE_URL]</con:value>
+    </con:property>
+    <con:property>
+        <con:name>token</con:name>
+        <con:value>[API_TOKEN]</con:value>
+    </con:property>
+</con:properties>
+```
+
+### 8. Specjalne przypadki
+
+**File Upload (multipart/form-data):**
+```xml
+<con:representation type="REQUEST">
+    <con:mediaType>multipart/form-data</con:mediaType>
+    <con:params>
+        <con:parameter>
+            <con:name>file</con:name>
+            <con:value></con:value>
+            <con:style>QUERY</con:style>
+            <con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type>
+        </con:parameter>
+    </con:params>
+</con:representation>
+```
+
+**XML Body:**
+```xml
+<con:request name="Request 1" id="[REQUEST_ID]" mediaType="application/xml">
+    <con:request><![CDATA[<xml>content</xml>]]></con:request>
+```
+
+### 9. Zamknięcie struktury
+
+Pamiętaj o prawidłowym zamknięciu wszystkich tagów:
+```xml
+        </con:method>
+    </con:resource>
+</con:interface>
+</con:soapui-project>
+```
+
+## Wymagania dodatkowe:
+
+1. **Generuj unikalne ID** dla każdego elementu (używaj UUID lub sekwencyjnych numerów)
+2. **Obsłuż nested JSON** w body requestów
+3. **Uwzględnij wszystkie HTTP headers** obecne w oryginalnych wywołaniach
+4. **Zachowaj oryginalne nazwy** endpointów i parametrów
+5. **Dodaj przykładowe wartości** dla wszystkich parametrów
+6. **Uwzględnij obsługę błędów** (response assertions jeśli dostępne)
+7. **Utwórz zmienne środowiskowe** dla powtarzających się wartości
+8. **Dodaj dokumentację** w komentarzach XML gdzie potrzebne
+
+## Format wyjściowy:
+
+Wygeneruj kompletny, gotowy do importu plik XML SoapUI z wszystkimi endpoint'ami, metodami, parametrami i przykładowymi requestami. Plik powinien być od razu funkcjonalny po zaimportowaniu do SoapUI.
+
+---
+
+**Aby użyć tego prompt'a:** Dostarcz listę endpointów REST, dokumentację API (Swagger/OpenAPI), kolekcję Postman lub przykłady curl commands, a otrzymasz kompletny XML do importu w SoapUI
