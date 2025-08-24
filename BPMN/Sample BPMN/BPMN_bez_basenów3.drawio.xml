@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36" version="28.1.1">
+  <diagram name="Zarządzanie rekordami w aplikacji X" id="HMMv0DwwGE0gNwhDwBaB">
+    <mxGraphModel dx="1554" dy="855" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1920" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="uICCy_1ILewUhSaRVzgT-1" value="Zarządzanie rekordami w aplikacji X" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="20" width="320" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-2" value="Użytkownik chce zarządzać rekordami" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-3" value="Logowanie do aplikacji X&#xa;&#xa;[Użytkownik]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="120" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-4" value="" style="shape=mxgraph.bpmn.user_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="125" y="130" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-5" value="Sprawdzenie uprawnień użytkownika&#xa;&#xa;[System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="280" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-6" value="" style="shape=mxgraph.bpmn.service_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="285" y="130" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-7" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="100" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-8" value="X" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontWeight=bold;" vertex="1" parent="1">
+          <mxGeometry x="455" y="115" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-9" value="Czy użytkownik ma uprawnienia?" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="410" y="150" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-10" value="Wyświetlenie komunikatu &quot;Brak dostępu&quot;&#xa;&#xa;[System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="400" y="200" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-11" value="" style="shape=mxgraph.bpmn.service_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="405" y="240" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-12" value="Brak dostępu" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="440" y="300" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-13" value="Wyświetlenie listy rekordów&#xa;&#xa;[System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="560" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-14" value="" style="shape=mxgraph.bpmn.service_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="565" y="130" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-15" value="Przeglądanie listy rekordów&#xa;&#xa;[Użytkownik]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="720" y="90" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-16" value="" style="shape=mxgraph.bpmn.user_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="725" y="130" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-17" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="100" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-18" value="X" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontWeight=bold;" vertex="1" parent="1">
+          <mxGeometry x="915" y="115" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-19" value="Wybór akcji" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="870" y="150" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-20" value="Dodanie nowego rekordu (ręcznie)&#xa;&#xa;[Użytkownik]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-21" value="" style="shape=mxgraph.bpmn.user_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1005" y="80" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-22" value="Edycja istniejącego rekordu&#xa;&#xa;[Użytkownik]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="120" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-23" value="" style="shape=mxgraph.bpmn.user_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1005" y="160" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-24" value="Masowy import rekordów (CSV/XLS)&#xa;&#xa;[Użytkownik]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="200" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-25" value="" style="shape=mxgraph.bpmn.manual_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1005" y="240" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-26" value="" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="120" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-27" value="X" style="text;html=1;align=center;verticalAlign=middle;fontSize=12;fontWeight=bold;" vertex="1" parent="1">
+          <mxGeometry x="1195" y="135" width="10" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-28" value="Zapisanie zmian w bazie danych&#xa;&#xa;[System]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="110" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-29" value="" style="shape=mxgraph.bpmn.service_task;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1265" y="150" width="15" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-30" value="Operacja wykonana pomyślnie" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="200" width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-2" target="uICCy_1ILewUhSaRVzgT-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-3" target="uICCy_1ILewUhSaRVzgT-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-5" target="uICCy_1ILewUhSaRVzgT-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-34" value="NIE - brak uprawnień" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-7" target="uICCy_1ILewUhSaRVzgT-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-10" target="uICCy_1ILewUhSaRVzgT-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-36" value="TAK - ma uprawnienia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-7" target="uICCy_1ILewUhSaRVzgT-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-13" target="uICCy_1ILewUhSaRVzgT-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-15" target="uICCy_1ILewUhSaRVzgT-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-39" value="Dodanie rekordu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-17" target="uICCy_1ILewUhSaRVzgT-20">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="70" />
+              <mxPoint x="1060" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-40" value="Edycja rekordu" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-17" target="uICCy_1ILewUhSaRVzgT-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-41" value="Import masowy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-17" target="uICCy_1ILewUhSaRVzgT-24">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="230" />
+              <mxPoint x="1060" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-42" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-20" target="uICCy_1ILewUhSaRVzgT-26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1140" y="70" />
+              <mxPoint x="1200" y="70" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-43" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-22" target="uICCy_1ILewUhSaRVzgT-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-44" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-24" target="uICCy_1ILewUhSaRVzgT-26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1140" y="230" />
+              <mxPoint x="1200" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-45" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-26" target="uICCy_1ILewUhSaRVzgT-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-28" target="uICCy_1ILewUhSaRVzgT-30">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1320" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-47" value="Kontynuacja pracy" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-30" target="uICCy_1ILewUhSaRVzgT-15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1320" y="350" />
+              <mxPoint x="780" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-48" value="Lista rekordów" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="200" width="80" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-49" value="Baza danych" style="shape=datastore;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="280" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-50" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=1;endArrow=none;endFill=0;dashed=1;dashPattern=1 4;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-13" target="uICCy_1ILewUhSaRVzgT-48">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-51" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=1;endArrow=none;endFill=0;dashed=1;dashPattern=1 4;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-28" target="uICCy_1ILewUhSaRVzgT-49">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-52" value="Użytkownik może wykonać tylko jedną akcję na raz, ale może kontynuować pracę po każdej operacji" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="320" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-53" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=1;endArrow=none;endFill=0;dashed=1;dashPattern=1 4;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-17" target="uICCy_1ILewUhSaRVzgT-52">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="280" />
+              <mxPoint x="1080" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-54" value="Proces uwzględnia różne poziomy uprawnień użytkowników" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" vertex="1" parent="1">
+          <mxGeometry x="280" y="320" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-55" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeWidth=1;endArrow=none;endFill=0;dashed=1;dashPattern=1 4;" edge="1" parent="1" source="uICCy_1ILewUhSaRVzgT-7" target="uICCy_1ILewUhSaRVzgT-54">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="280" />
+              <mxPoint x="350" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-56" value="Legenda ról:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-57" value="Użytkownik" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="470" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-58" value="System" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="160" y="470" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-59" value="Typy zadań:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="440" width="100" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-60" value="👤 Zadanie użytkownika" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="470" width="120" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-61" value="⚙️ Zadanie systemowe" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="490" width="120" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="uICCy_1ILewUhSaRVzgT-62" value="✋ Zadanie manualne" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="280" y="510" width="120" height="15" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
