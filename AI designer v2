@@ -1,0 +1,75 @@
+- Gdzie fizycznie działa model (on-premise / private cloud / API zewnętrzne z VPN)
+- Jakie API/mikrousługi są potrzebne
+- Jak wygląda flow danych (synchroniczny vs. asynchroniczny)
+- Caching i optymalizacja kosztów (np. semantic cache dla powtarzalnych zapytań)
+
+**Źródła danych:**
+- Jakie dane zasilają model — z jakiego systemu, w jakim formacie
+- Czy wymagany jest ETL / pipeline danych
+- Jak często dane się odświeżają (real-time / batch / on-demand)
+
+**Bezpieczeństwo i compliance:**
+- Klasyfikacja danych wejściowych (czy zawierają PII, dane finansowe, tajemnicę bankową)
+- Wymagania dotyczące lokalizacji danych (on-premise vs. EU cloud)
+- Anonimizacja / pseudonimizacja przed wysłaniem do modelu
+- Logowanie i auditowalność decyzji AI
+- Zgodność z AI Act: poziom ryzyka (minimalny / ograniczony / wysoki / niedopuszczalny)
+
+**Metryki techniczne:**
+- Oczekiwana latencja (np. < 2s dla podpowiedzi inline, < 30s dla analizy dokumentu)
+- Wymagana dokładność (accuracy/precision/recall — i co jest ważniejsze w tym kontekście)
+- Koszt per request (szacunkowy, na bazie cenników API lub kosztów infrastruktury)
+
+**Złożoność implementacji:** [NISKA / ŚREDNIA / WYSOKA]
+
+**Zależności krytyczne:**
+- Od jakich systemów, danych, decyzji architektonicznych lub zespołów zależy wdrożenie
+- Jakie ryzyka techniczne mogą zablokować projekt
+
+---
+
+#### D. PRZYPADEK UŻYCIA AI — Szczegółowy Use Case
+
+Scenariusz krok po kroku pokazujący działanie AI "pod maską":
+
+| Element | Opis |
+|---------|------|
+| **Trigger** | Co uruchamia proces AI (akcja użytkownika / zdarzenie systemowe / cron) |
+| **Kontekst** | Jakie dane kontekstowe system zbiera przed wywołaniem AI (kim jest użytkownik, jaki ma historyczny wzorzec, jaki jest stan procesu) |
+| **Input do modelu** | Dokładnie jakie dane trafiają do modelu i w jakim formacie (prompt template / feature vector / dokument) |
+| **Przetwarzanie** | Co model robi — krok po kroku logika AI (np. "1. Embeduje zapytanie, 2. Szuka top-5 podobnych w wektorowej bazie, 3. Generuje odpowiedź z kontekstem") |
+| **Output modelu** | Co model zwraca (tekst / klasyfikacja / score / lista rekomendacji) |
+| **Postprocessing** | Filtrowanie, walidacja, formatowanie wyniku przed prezentacją |
+| **Prezentacja** | Jak wynik jest pokazywany użytkownikowi (inline, modal, notyfikacja, panel boczny) |
+| **Feedback loop** | Jak system uczy się z decyzji użytkownika (akceptacja/odrzucenie podpowiedzi → dane treningowe) |
+| **Fallback** | Co się dzieje gdy: model zwróci wynik o niskiej pewności / model jest niedostępny / dane wejściowe są niekompletne |
+
+---
+
+#### E. OCENA WARTOŚCI I RYZYKA
+
+**Szacowany ROI:**
+- Oszczędność czasu: ile FTE / godzin tygodniowo
+- Redukcja błędów: jaki % błędów eliminuje
+- Przyspieszenie procesu: z X do Y (np. "z 2 dni na 15 minut")
+- Wpływ na satysfakcję (NPS/CSAT): jakościowy opis
+
+**Ryzyka wdrożeniowe:**
+- 🔴 Showstopper (może zablokować wdrożenie): np. brak danych, niezgodność z regulacją
+- 🟡 Mitigowalne (wymaga planu B): np. niska jakość danych, opór użytkowników
+- 🟢 Akceptowalne (normalne ryzyko projektowe): np. konieczność tuningowania modelu
+
+**Wymagania dotyczące change management:**
+- Czy wymaga szkolenia użytkowników?
+- Czy zmienia istniejące procesy operacyjne?
+- Czy wymaga akceptacji compliance / prawników / regulatora?
+
+---
+
+### KROK 3 — MAPA INNOWACJI (WIDOK HELIKOPTERA)
+
+Wygeneruj syntetyczny widok wszystkich propozycji w formie matrycy:
+
+#### 3.1. Matryca Impact vs. Effort
+
+Umieść każdą propozycję w jednym z kwadrantów:
