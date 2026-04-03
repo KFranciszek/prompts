@@ -1,0 +1,522 @@
+# Drzewa Walidacji × Gherkin: Metoda Dokumentacji Integracji
+
+## Idea: każdy węzeł drzewa = checkpoint walidacyjny = Rule w Gherkin
+
+Medyczne drzewa decyzyjne mają jedną cechę, której brakuje flowchartom: **każde zakończenie gałęzi to konkretna diagnoza z konkretnym leczeniem**. Przełożone na integrację: każde zakończenie gałęzi to konkretny edge case z konkretnym ekranem UI, kodem błędu i scenariuszem testowym.
+
+Połączenie z Gherkin daje nam:
+- **Drzewo** = wizualna mapa WSZYSTKICH ścieżek walidacji (dla analityka i architekta)
+- **Gherkin `Rule` + `Example`** = wykonywalna specyfikacja każdej gałęzi (dla deva i QA)
+- **Referencje mockupów** = stan UI na każdym liściu (dla designera)
+
+Razem tworzą **jeden artefakt, który nie może dryfować** — bo Gherkin jest uruchamiany na CI.
+
+---
+
+## Anatomia metody
+
+```
+DRZEWO WALIDACJI (wizualne, Mermaid/PlantUML)
+    │
+    ├── Węzeł decyzyjny ──→ Gherkin Rule (reguła biznesowa)
+    │     │
+    │     ├── Gałąź TAK ──→ następny węzeł LUB liść sukcesu
+    │     │                   → Gherkin Example (happy path)
+    │     │                   → Mockup UI: #M-xxx
+    │     │
+    │     └── Gałąź NIE ──→ liść błędu (edge case)
+    │                         → Gherkin Example (failure scenario)
+    │                         → Mockup UI: #M-xxx
+    │                         → Kod błędu: ERR-xxx
+    │                         → FMEA: RPN score
+    │
+    └── ... kolejne węzły
+```
+
+**Konwencja nazewnicza:**
+- `[VAL-xxx]` = ID reguły walidacji (trackowane w arkuszu FMEA)
+- `[M-xxx]` = referencja do mockupu UI
+- `[ERR-xxx]` = kod błędu zwracany przez API
+- `[LEAF-xxx]` = zakończenie gałęzi drzewa (mapowane 1:1 na Gherkin Example)
+
+---
+
+## Przykład: Wysyłka danych do Systemu Centralnego
+
+### Drzewo walidacji — diagram
+
+```mermaid
+flowchart TD
+    START([🟢 Użytkownik klika WYŚLIJ]) --> V1{VAL-001<br/>Czy sesja aktywna?}
+
+    V1 -->|NIE| L1[🔴 LEAF-001<br/>Sesja wygasła<br/>ERR-AUTH-001<br/>M-101: Ekran re-login]
+    V1 -->|TAK| V2{VAL-002<br/>Czy formularz<br/>przechodzi walidację<br/>kliencką?}
+
+    V2 -->|NIE| L2[🔴 LEAF-002<br/>Błędy walidacji formularza<br/>ERR-FORM-001<br/>M-102: Inline errors]
+    V2 -->|TAK| V3{VAL-003<br/>Czy wersja schematu<br/>komunikatu jest<br/>wspierana przez SC?}
+
+    V3 -->|NIE| L3[🔴 LEAF-003<br/>Niekompatybilna wersja<br/>ERR-SCHEMA-001<br/>M-103: Alert wersji]
+    V3 -->|TAK| V4{VAL-004<br/>Czy numer rachunku<br/>istnieje w SC?}
+
+    V4 -->|TIMEOUT| L4a[🟡 LEAF-004a<br/>SC nie odpowiada<br/>ERR-TIMEOUT-001<br/>M-104: Spinner → retry info]
+    V4 -->|NIE| L4b[🔴 LEAF-004b<br/>Rachunek nie znaleziony<br/>ERR-ACCT-001<br/>M-105: Alert rachunku]
+    V4 -->|TAK| V5{VAL-005<br/>Czy rachunek aktywny<br/>i niezablokowany?}
+
+    V5 -->|ZABLOKOWANY| L5a[🔴 LEAF-005a<br/>Rachunek zablokowany<br/>ERR-ACCT-002<br/>M-106: Info blokady]
+    V5 -->|ZAMKNIĘTY| L5b[🔴 LEAF-005b<br/>Rachunek zamknięty<br/>ERR-ACCT-003<br/>M-107: Info zamknięcia]
+    V5 -->|AKTYWNY| V6{VAL-006<br/>Czy kwota w limicie<br/>dziennym klienta?}
+
+    V6 -->|NIE| L6[🟡 LEAF-006<br/>Przekroczenie limitu<br/>ERR-LIMIT-001<br/>M-108: Info limit + autoryzacja]
+    V6 -->|TAK| V7{VAL-007<br/>Czy klient przeszedł<br/>weryfikację KYC<br/>dla tego typu operacji?}
+
+    V7 -->|NIE| L7[🔴 LEAF-007<br/>Brak KYC<br/>ERR-KYC-001<br/>M-109: Wymóg weryfikacji]
+    V7 -->|TAK| V8{VAL-008<br/>Czy komunikat przechodzi<br/>walidację biznesową SC?}
+
+    V8 -->|TIMEOUT| L8a[🟡 LEAF-008a<br/>SC timeout na walidacji biz.<br/>ERR-TIMEOUT-002<br/>M-110: Przetwarzanie async]
+    V8 -->|ODRZUCONY| L8b[🔴 LEAF-008b<br/>SC odrzuca komunikat<br/>ERR-BIZ-xxx (dynamiczny)<br/>M-111: Szczegóły odrzucenia]
+    V8 -->|ZAAKCEPTOWANY| V9{VAL-009<br/>Czy SC zwrócił ACK<br/>w oknie SLA?}
+
+    V9 -->|NIE| L9[🟡 LEAF-009<br/>ACK nie dotarł<br/>ERR-ACK-001<br/>M-112: Status weryfikacja]
+    V9 -->|TAK| SUCCESS([🟢 LEAF-000<br/>SUKCES<br/>M-100: Potwierdzenie])
+
+    style L1 fill:#ffcccc,stroke:#cc0000
+    style L2 fill:#ffcccc,stroke:#cc0000
+    style L3 fill:#ffcccc,stroke:#cc0000
+    style L4a fill:#fff3cd,stroke:#cc9900
+    style L4b fill:#ffcccc,stroke:#cc0000
+    style L5a fill:#ffcccc,stroke:#cc0000
+    style L5b fill:#ffcccc,stroke:#cc0000
+    style L6 fill:#fff3cd,stroke:#cc9900
+    style L7 fill:#ffcccc,stroke:#cc0000
+    style L8a fill:#fff3cd,stroke:#cc9900
+    style L8b fill:#ffcccc,stroke:#cc0000
+    style L9 fill:#fff3cd,stroke:#cc9900
+    style SUCCESS fill:#ccffcc,stroke:#009900
+    style START fill:#ccffcc,stroke:#009900
+```
+
+**Legenda kolorów:**
+- 🟢 Zielony = sukces (happy path)
+- 🔴 Czerwony = twarde odrzucenie (blokada operacji)
+- 🟡 Żółty = miękki problem (timeout, limit — możliwy retry lub alternatywna ścieżka)
+
+---
+
+### Gherkin — każda gałąź drzewa = Rule + Example
+
+```gherkin
+# language: pl
+Właściwość: Wysyłka danych do Systemu Centralnego
+  Kontekst integracji: System Lokalny wysyła komunikat typu ACMT
+  do Systemu Centralnego. Walidacja odbywa się kaskadowo
+  zgodnie z drzewem walidacji (patrz: drzewo-walidacji-acmt.mermaid).
+
+  # ═══════════════════════════════════════════════════════════
+  # LEAF-000: HAPPY PATH (sukces end-to-end)
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Poprawny komunikat przechodzi wszystkie walidacje i jest zaakceptowany przez SC
+    # Ścieżka: V1→TAK → V2→TAK → V3→TAK → V4→TAK → V5→AKTYWNY
+    #        → V6→TAK → V7→TAK → V8→ZAAKCEPTOWANY → V9→TAK → SUKCES
+
+    Przykład: Pełny happy path — wszystkie walidacje przechodzą
+      Zakładając że użytkownik jest zalogowany z aktywną sesją
+      I formularz zawiera poprawne dane:
+        | pole               | wartość                        |
+        | numer_rachunku     | 12345678901234567890123456     |
+        | kwota              | 1500.00                        |
+        | waluta             | PLN                            |
+        | typ_operacji       | przelew_krajowy                |
+      I wersja schematu komunikatu to "2.1" wspierana przez SC
+      I rachunek "12345678901234567890123456" istnieje w SC i jest aktywny
+      I kwota 1500.00 PLN nie przekracza limitu dziennego klienta
+      I klient przeszedł weryfikację KYC dla typu "przelew_krajowy"
+      Kiedy użytkownik klika "Wyślij"
+      Wtedy system wysyła komunikat ACMT do SC
+      I SC waliduje komunikat i zwraca ACK w oknie SLA (< 5s)
+      I użytkownik widzi ekran potwierdzenia [M-100]
+      I system loguje zdarzenie "ACMT_SENT_OK" z ID transakcji
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V1: Walidacja sesji [VAL-001]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Użytkownik musi mieć aktywną sesję aby wysłać dane do SC [VAL-001]
+    # Gałąź: V1 → NIE → LEAF-001
+
+    Przykład: Sesja wygasła przed kliknięciem Wyślij [LEAF-001]
+      Zakładając że sesja użytkownika wygasła 2 minuty temu
+      Kiedy użytkownik klika "Wyślij"
+      Wtedy system NIE wysyła komunikatu do SC
+      I użytkownik widzi ekran ponownego logowania [M-101]
+      I system zwraca kod błędu ERR-AUTH-001
+      I dane formularza są zachowane w sesji tymczasowej na 15 minut
+
+    Przykład: Sesja wygasa W TRAKCIE przetwarzania (edge case) [LEAF-001b]
+      Zakładając że sesja użytkownika wygasa za 2 sekundy
+      I formularz jest poprawny
+      Kiedy użytkownik klika "Wyślij"
+      I walidacja kliencka trwa 3 sekundy
+      Wtedy system NIE wysyła komunikatu do SC
+      I użytkownik widzi ekran ponownego logowania [M-101]
+      I po ponownym zalogowaniu formularz jest wstępnie wypełniony
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V2: Walidacja kliencka formularza [VAL-002]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Formularz musi przejść walidację kliencką przed wysłaniem do SC [VAL-002]
+    # Gałąź: V2 → NIE → LEAF-002
+
+    Przykład: Brakujące pole wymagane [LEAF-002]
+      Zakładając że użytkownik jest zalogowany z aktywną sesją
+      I formularz NIE zawiera numeru rachunku (pole puste)
+      Kiedy użytkownik klika "Wyślij"
+      Wtedy system wyświetla inline error przy polu "Numer rachunku": "Pole wymagane" [M-102]
+      I komunikat NIE jest wysyłany do SC
+      I fokus przesuwa się na pierwsze pole z błędem
+
+    Przykład: Numer rachunku — niepoprawna checksum NRB [LEAF-002]
+      Zakładając że użytkownik jest zalogowany z aktywną sesją
+      I formularz zawiera numer rachunku "12345678901234567890123499"
+      I checksum NRB tego numeru jest niepoprawna
+      Kiedy użytkownik klika "Wyślij"
+      Wtedy system wyświetla inline error: "Niepoprawny numer rachunku" [M-102]
+      I komunikat NIE jest wysyłany do SC
+
+    Przykład: Kwota ujemna [LEAF-002]
+      Zakładając że użytkownik jest zalogowany z aktywną sesją
+      I formularz zawiera kwotę "-500.00"
+      Kiedy użytkownik klika "Wyślij"
+      Wtedy system wyświetla inline error przy polu "Kwota": "Kwota musi być dodatnia" [M-102]
+
+    Przykład: Wiele błędów jednocześnie [LEAF-002]
+      Zakładając że użytkownik jest zalogowany z aktywną sesją
+      I formularz zawiera błędy:
+        | pole           | wartość | błąd                          |
+        | numer_rachunku |         | Pole wymagane                 |
+        | kwota          | -1      | Kwota musi być dodatnia       |
+        | waluta         | XYZ     | Nieobsługiwana waluta         |
+      Kiedy użytkownik klika "Wyślij"
+      Wtedy system wyświetla WSZYSTKIE inline errors jednocześnie [M-102]
+      I fokus przesuwa się na pierwsze pole z błędem (numer_rachunku)
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V3: Kompatybilność wersji schematu [VAL-003]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Wersja schematu komunikatu musi być wspierana przez SC [VAL-003]
+    # Gałąź: V3 → NIE → LEAF-003
+    # Ten węzeł chroni przed sytuacją gdy SL został zaktualizowany
+    # ale SC jeszcze nie — lub odwrotnie.
+
+    Przykład: SC nie wspiera wersji schematu SL [LEAF-003]
+      Zakładając że System Lokalny wysyła komunikat w schemacie v3.0
+      I System Centralny wspiera schematy: v2.0, v2.1
+      Kiedy system próbuje wysłać komunikat
+      Wtedy system wyświetla alert: "Aktualizacja systemu w toku. Spróbuj ponownie później." [M-103]
+      I system zwraca ERR-SCHEMA-001
+      I system loguje warning "SCHEMA_MISMATCH" z wersją SL i listą wersji SC
+      I system NIE próbuje retry'a (problem nie jest przejściowy)
+
+    Przykład: SC wspiera nowszą wersję niż SL (backward compat) [LEAF-003-ok]
+      Zakładając że System Lokalny wysyła komunikat w schemacie v2.0
+      I System Centralny wspiera schematy: v2.0, v2.1, v3.0
+      Kiedy system próbuje wysłać komunikat
+      Wtedy komunikat jest zaakceptowany przez SC (backward compatibility)
+      I przetwarzanie kontynuuje do węzła V4
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V4: Weryfikacja rachunku w SC [VAL-004]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Numer rachunku musi istnieć w Systemie Centralnym [VAL-004]
+    # Gałąź: V4 → TIMEOUT → LEAF-004a
+    # Gałąź: V4 → NIE → LEAF-004b
+
+    Przykład: Rachunek nie istnieje w SC [LEAF-004b]
+      Zakładając że komunikat przeszedł walidacje V1-V3
+      I numer rachunku "99999999999999999999999999" NIE istnieje w SC
+      Kiedy SC przetwarza zapytanie o rachunek
+      Wtedy SC zwraca odpowiedź "ACCT_NOT_FOUND"
+      I użytkownik widzi alert: "Rachunek nie został znaleziony w systemie" [M-105]
+      I system zwraca ERR-ACCT-001
+
+    Przykład: SC nie odpowiada w oknie SLA (timeout) [LEAF-004a]
+      Zakładając że komunikat przeszedł walidacje V1-V3
+      I System Centralny nie odpowiada na zapytanie o rachunek
+      Kiedy upłynie 5 sekund bez odpowiedzi
+      Wtedy system wyświetla spinner z komunikatem "Weryfikacja trwa..." [M-104]
+      I system ponawia zapytanie (retry 1/3)
+      Kiedy upłynie kolejne 5 sekund bez odpowiedzi
+      Wtedy system ponawia zapytanie (retry 2/3)
+      Kiedy upłynie kolejne 5 sekund bez odpowiedzi
+      Wtedy system ponawia zapytanie (retry 3/3)
+      Kiedy upłynie kolejne 5 sekund bez odpowiedzi
+      Wtedy system wyświetla: "System chwilowo niedostępny. Spróbuj za kilka minut." [M-104]
+      I system zwraca ERR-TIMEOUT-001
+      I system loguje alert "SC_UNREACHABLE" z timestampami prób
+
+    Przykład: SC odpowiada po 2 retry'ach (eventual success) [LEAF-004a-ok]
+      Zakładając że komunikat przeszedł walidacje V1-V3
+      I SC nie odpowiada na pierwsze 2 zapytania
+      I SC odpowiada na 3. zapytanie po 2 sekundach
+      Wtedy spinner znika
+      I przetwarzanie kontynuuje do węzła V5
+      I łączny czas oczekiwania jest logowany jako metryka
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V5: Status rachunku [VAL-005]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Rachunek musi być aktywny i niezablokowany [VAL-005]
+    # Gałąź: V5 → ZABLOKOWANY → LEAF-005a
+    # Gałąź: V5 → ZAMKNIĘTY → LEAF-005b
+    # Uwaga: różne statusy = różne komunikaty i różne akcje follow-up
+
+    Przykład: Rachunek zablokowany (np. zajęcie komornicze) [LEAF-005a]
+      Zakładając że rachunek istnieje w SC
+      I status rachunku w SC to "BLOCKED" z przyczyną "ENFORCEMENT"
+      Kiedy SC zwraca status rachunku
+      Wtedy użytkownik widzi: "Operacja niemożliwa — rachunek zablokowany. Skontaktuj się z oddziałem." [M-106]
+      I system zwraca ERR-ACCT-002
+      I system NIE ujawnia przyczyny blokady użytkownikowi (dane wrażliwe)
+
+    Przykład: Rachunek zamknięty [LEAF-005b]
+      Zakładając że rachunek istnieje w SC
+      I status rachunku w SC to "CLOSED"
+      Kiedy SC zwraca status rachunku
+      Wtedy użytkownik widzi: "Rachunek został zamknięty. Użyj innego rachunku." [M-107]
+      I system zwraca ERR-ACCT-003
+
+    Przykład: Rachunek w statusie technicznym "MIGRATING" (edge case) [LEAF-005c]
+      Zakładając że rachunek istnieje w SC
+      I status rachunku w SC to "MIGRATING" (migracja techniczna)
+      Kiedy SC zwraca status rachunku
+      Wtedy system traktuje to jak timeout (nie blokada, nie zamknięcie)
+      I użytkownik widzi: "Trwa aktualizacja danych rachunku. Spróbuj za kilka minut." [M-104]
+      I system loguje warning "ACCT_MIGRATING"
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V6: Limit dzienny [VAL-006]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Kwota operacji nie może przekroczyć limitu dziennego klienta [VAL-006]
+    # Gałąź: V6 → NIE → LEAF-006
+    # Uwaga: limit dzienny ≠ twarde odrzucenie — klient może autoryzować
+
+    Przykład: Kwota przekracza limit dzienny [LEAF-006]
+      Zakładając że rachunek jest aktywny
+      I limit dzienny klienta to 10000.00 PLN
+      I klient wykorzystał dziś 8500.00 PLN
+      I kwota operacji to 3000.00 PLN (pozostało 1500.00 PLN)
+      Kiedy system sprawdza limit
+      Wtedy użytkownik widzi: "Kwota przekracza dzienny limit. Pozostały limit: 1500.00 PLN" [M-108]
+      I system oferuje opcję "Autoryzuj operację ponadlimitową" (dodatkowy PIN/SMS)
+      I system loguje "LIMIT_EXCEEDED" z kwotą i limitem
+
+    Przykład: Kwota = dokładnie limit (boundary) [LEAF-006-boundary]
+      Zakładając że limit dzienny klienta to 10000.00 PLN
+      I klient wykorzystał dziś 0.00 PLN
+      I kwota operacji to 10000.00 PLN
+      Kiedy system sprawdza limit
+      Wtedy operacja przechodzi (limit = kwota jest OK)
+      I przetwarzanie kontynuuje do węzła V7
+
+    Przykład: Kwota = limit + 0.01 PLN (boundary) [LEAF-006-boundary-over]
+      Zakładając że limit dzienny klienta to 10000.00 PLN
+      I klient wykorzystał dziś 0.00 PLN
+      I kwota operacji to 10000.01 PLN
+      Kiedy system sprawdza limit
+      Wtedy użytkownik widzi ekran autoryzacji ponadlimitowej [M-108]
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V7: Weryfikacja KYC [VAL-007]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: Klient musi mieć aktualną weryfikację KYC dla danego typu operacji [VAL-007]
+    # Gałąź: V7 → NIE → LEAF-007
+
+    Przykład: Brak weryfikacji KYC [LEAF-007]
+      Zakładając że rachunek jest aktywny i kwota w limicie
+      I klient NIE ma aktualnej weryfikacji KYC dla typu "przelew_zagraniczny"
+      Kiedy system sprawdza status KYC
+      Wtedy użytkownik widzi: "Wymagana weryfikacja tożsamości dla tego typu operacji" [M-109]
+      I system oferuje link do procesu weryfikacji KYC
+      I system zwraca ERR-KYC-001
+      I dane formularza są zachowane na 24h
+
+    Przykład: KYC wygasło 1 dzień temu (grace period?) [LEAF-007-grace]
+      Zakładając że KYC klienta wygasło wczoraj
+      I typ operacji to "przelew_krajowy" (niskie ryzyko)
+      Kiedy system sprawdza status KYC
+      Wtedy system sprawdza politykę grace period
+      I jeśli grace period aktywny: operacja przechodzi z warningiem
+      I jeśli grace period NIEaktywny: twarde odrzucenie [M-109]
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V8: Walidacja biznesowa SC [VAL-008]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: System Centralny musi zaakceptować komunikat w walidacji biznesowej [VAL-008]
+    # Gałąź: V8 → TIMEOUT → LEAF-008a
+    # Gałąź: V8 → ODRZUCONY → LEAF-008b
+    # Uwaga: SC może odrzucić z wielu powodów — każdy wymaga osobnego komunikatu
+
+    Przykład: SC odrzuca — duplikat operacji [LEAF-008b-dup]
+      Zakładając że komunikat przeszedł walidacje V1-V7
+      I SC wykrywa, że komunikat z tym samym ID już został przetworzony
+      Kiedy SC zwraca odpowiedź "DUPLICATE_MESSAGE"
+      Wtedy użytkownik widzi: "Ta operacja została już zrealizowana" [M-111]
+      I system wyświetla link do poprzedniej operacji
+      I system zwraca ERR-BIZ-DUP
+
+    Przykład: SC odrzuca — naruszenie reguły biznesowej (ogólny) [LEAF-008b-gen]
+      Zakładając że komunikat przeszedł walidacje V1-V7
+      I SC odrzuca komunikat z kodem "BIZ_RULE_VIOLATION" i opisem
+      Kiedy SC zwraca odpowiedź odrzucenia
+      Wtedy użytkownik widzi szczegóły odrzucenia z SC [M-111]
+      I opis błędu z SC jest wyświetlony czytelnie (nie raw JSON)
+      I system zwraca ERR-BIZ-xxx (dynamiczny kod z SC)
+
+    Przykład: SC timeout na walidacji biznesowej [LEAF-008a]
+      Zakładając że komunikat przeszedł walidacje V1-V7
+      I SC nie odpowiada na walidację biznesową w ciągu 30 sekund
+      Kiedy upływa okno SLA
+      Wtedy użytkownik widzi: "Operacja przyjęta do przetwarzania. Sprawdź status w historii." [M-110]
+      I system tworzy rekord ze statusem "PENDING_ASYNC"
+      I system uruchamia proces rekoncyliacji asynchronicznej
+      I system zwraca ERR-TIMEOUT-002
+
+  # ═══════════════════════════════════════════════════════════
+  # WĘZEŁ V9: Potwierdzenie ACK [VAL-009]
+  # ═══════════════════════════════════════════════════════════
+
+  Zasada: SC musi zwrócić ACK w oknie SLA po zaakceptowaniu komunikatu [VAL-009]
+    # Gałąź: V9 → NIE → LEAF-009
+
+    Przykład: ACK nie dociera (sieć/infrastruktura) [LEAF-009]
+      Zakładając że SC zaakceptował komunikat (V8 = OK)
+      I ACK nie dociera do Systemu Lokalnego w ciągu 5 sekund
+      Kiedy upływa okno SLA na ACK
+      Wtedy użytkownik widzi: "Operacja wysłana — oczekiwanie na potwierdzenie" [M-112]
+      I status operacji zmienia się na "AWAITING_CONFIRMATION"
+      I system uruchamia polling statusu co 10 sekund przez 2 minuty
+      I jeśli ACK dotrze w ciągu 2 minut: status → "CONFIRMED" + powiadomienie push
+      I jeśli ACK NIE dotrze: status → "REQUIRES_RECONCILIATION" + alert do operatora
+
+    Przykład: ACK dociera z opóźnieniem (po SLA ale przed timeout) [LEAF-009-delayed]
+      Zakładając że SC zaakceptował komunikat
+      I ACK dociera po 8 sekundach (SLA = 5s)
+      Kiedy ACK dociera
+      Wtedy status zmienia się na "CONFIRMED"
+      I użytkownik widzi potwierdzenie [M-100] (jeśli nadal na ekranie)
+      I system loguje metrykę "ACK_DELAYED" z czasem opóźnienia
+```
+
+---
+
+## Macierz: Drzewo → Gherkin → UI → FMEA
+
+| Liść drzewa | Węzeł | Rule Gherkin | Mockup | Kod błędu | RPN | Typ |
+|---|---|---|---|---|---|---|
+| LEAF-000 | — | Happy path sukces | M-100 | — | — | 🟢 Sukces |
+| LEAF-001 | V1 | VAL-001 Sesja | M-101 | ERR-AUTH-001 | 48 | 🔴 Hard |
+| LEAF-002 | V2 | VAL-002 Formularz | M-102 | ERR-FORM-001 | 36 | 🔴 Hard |
+| LEAF-003 | V3 | VAL-003 Schema | M-103 | ERR-SCHEMA-001 | 72 | 🔴 Hard |
+| LEAF-004a | V4 | VAL-004 Rachunek | M-104 | ERR-TIMEOUT-001 | 160 | 🟡 Soft |
+| LEAF-004b | V4 | VAL-004 Rachunek | M-105 | ERR-ACCT-001 | 84 | 🔴 Hard |
+| LEAF-005a | V5 | VAL-005 Status | M-106 | ERR-ACCT-002 | 96 | 🔴 Hard |
+| LEAF-005b | V5 | VAL-005 Status | M-107 | ERR-ACCT-003 | 72 | 🔴 Hard |
+| LEAF-006 | V6 | VAL-006 Limit | M-108 | ERR-LIMIT-001 | 80 | 🟡 Soft |
+| LEAF-007 | V7 | VAL-007 KYC | M-109 | ERR-KYC-001 | 90 | 🔴 Hard |
+| LEAF-008a | V8 | VAL-008 Biz SC | M-110 | ERR-TIMEOUT-002 | 160 | 🟡 Soft |
+| LEAF-008b | V8 | VAL-008 Biz SC | M-111 | ERR-BIZ-xxx | 120 | 🔴 Hard |
+| LEAF-009 | V9 | VAL-009 ACK | M-112 | ERR-ACK-001 | 160 | 🟡 Soft |
+
+**Sortowanie po RPN (priorytety testów i designu UI):**
+
+1. 🟡 **RPN 160** — LEAF-004a (timeout SC), LEAF-008a (timeout biz), LEAF-009 (brak ACK) → **najwięcej uwagi QA**
+2. 🔴 **RPN 120** — LEAF-008b (odrzucenie biznesowe SC) → **dynamiczne kody błędów**
+3. 🔴 **RPN 96** — LEAF-005a (rachunek zablokowany)
+4. 🔴 **RPN 90** — LEAF-007 (brak KYC)
+5. ...reszta
+
+---
+
+## Struktura plików w repozytorium
+
+```
+docs/integration/acmt-send/
+├── drzewo-walidacji.mermaid          # Wizualne drzewo (renderowane w CI)
+├── walidacja-wysylka-sc.feature       # Gherkin — wykonywalne specyfikacje
+├── macierz-fmea.csv                   # Arkusz FMEA z RPN (importowalny do Excel)
+├── mockupy/
+│   ├── M-100-potwierdzenie.png
+│   ├── M-101-re-login.png
+│   ├── M-102-inline-errors.png
+│   ├── M-103-alert-wersji.png
+│   ├── M-104-spinner-retry.png
+│   ├── M-105-rachunek-nie-znaleziony.png
+│   ├── M-106-blokada.png
+│   ├── M-107-zamkniecie.png
+│   ├── M-108-limit-autoryzacja.png
+│   ├── M-109-wymog-kyc.png
+│   ├── M-110-przetwarzanie-async.png
+│   ├── M-111-odrzucenie-sc.png
+│   └── M-112-oczekiwanie-ack.png
+├── kontrakty/
+│   ├── acmt-request.schema.json       # JSON Schema (warstwa dev — 3GPP wzorzec)
+│   ├── acmt-response.schema.json
+│   ├── acmt-request-example.json      # Przykład payloadu (warstwa QA — 3GPP wzorzec)
+│   ├── acmt-response-ok.json
+│   └── acmt-response-error.json
+└── README.md                          # Ten dokument
+```
+
+---
+
+## Jak korzystać z tej metody — krok po kroku
+
+### Krok 1: Narysuj drzewo (sesja z zespołem, 1-2h)
+
+Zbierz deva, testera, analityka i UX-owca. Zacznij od pytania: **„Co jest pierwszą rzeczą, którą musimy sprawdzić?"** Każda odpowiedź = nowy węzeł. Każde „a co jeśli..." = nowa gałąź.
+
+Użyj Mermaid/PlantUML — drzewo idzie do repo, renderuje się w CI/CD.
+
+### Krok 2: Otaguj liście (30 min)
+
+Każdy liść dostaje: `LEAF-xxx`, `ERR-xxx`, `M-xxx`. To tworzy macierz powiązań.
+
+### Krok 3: Napisz Gherkin (1-2 dni)
+
+Dla każdego węzła napisz `Zasada:` (= Rule) i `Przykład:` dla każdej gałęzi wychodzącej z tego węzła. Dodaj boundary conditions.
+
+**Reguła kciuka**: jeśli z węzła wychodzą 3 gałęzie, masz minimum 3 Examples. Dodaj 1-2 boundary cases na węzeł = 4-5 Examples.
+
+### Krok 4: Uzupełnij FMEA (1h)
+
+Wrzuć liście do arkusza FMEA, oceń S×O×D. Posortuj po RPN. Góra listy = priorytety sprintu.
+
+### Krok 5: Zamów mockupy (parallel)
+
+UX designer dostaje listę `M-xxx` z opisem kontekstu (który liść, jaki stan, jakie dane). Wie DOKŁADNIE co projektować — zero pytań „a jaki to ma być ekran?".
+
+### Krok 6: Automatyzuj (ongoing)
+
+Gherkin → Cucumber/SpecFlow → CI/CD. Każdy build weryfikuje, czy system nadal przechodzi wszystkie ścieżki drzewa. Jeśli ktoś zmieni walidację i nie zaktualizuje drzewa/Gherkin — build się złamie.
+
+---
+
+## Przewaga nad tradycyjnymi metodami
+
+| Aspekt | Confluence + Figma + Jira | Drzewo + Gherkin |
+|---|---|---|
+| **Gdzie są edge case'y?** | Rozproszone po Jira tickets | Każdy liść drzewa = edge case |
+| **Który edge case jest najważniejszy?** | „Intuicja PM-a" | RPN score z FMEA |
+| **Czy testujemy wszystko?** | Nie wiadomo | 1 liść = 1+ Gherkin Example = 1+ test |
+| **Czy dokumentacja jest aktualna?** | Prawdopodobnie nie | Build się łamie jeśli nie jest |
+| **Ile mockupów potrzebujemy?** | „Chyba z 20?" | Dokładnie tyle ile liści |
+| **Skąd dev wie co obsłużyć?** | Czyta Confluence i modli się | Drzewo + JSON Schema + Example |
+| **Skąd QA wie co testować?** | Czyta ticket i pyta deva | Gherkin Examples → automatyczne testy |
+| **Co się dzieje jak nowy dev dołącza?** | 3 tygodnie onboardingu | Czyta drzewo i rozumie przepływ w 30 min |
